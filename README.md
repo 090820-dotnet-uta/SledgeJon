@@ -1,2 +1,2 @@
 # SledgeJon
-This is Jon's repo
+### Jon Sledge's Personal Revature Repository
