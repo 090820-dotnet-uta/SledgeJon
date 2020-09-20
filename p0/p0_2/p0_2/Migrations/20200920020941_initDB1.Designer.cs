@@ -10,7 +10,7 @@ using p0_2.Models;
 namespace p0_2.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20200919235505_initDB1")]
+    [Migration("20200920020941_initDB1")]
     partial class initDB1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

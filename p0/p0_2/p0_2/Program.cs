@@ -41,7 +41,6 @@ namespace p0_2
 
         int loggedInMenuInput;
         int locationMenuChoice;
-        int ordersMenuInput;
         do
         {
           // Logged in display UI inputs
@@ -68,7 +67,7 @@ namespace p0_2
           }
           else if (loggedInMenuInput == 5)
           {
-            ordersMenuInput = OrdersMenuInput(context);
+            OrdersMenuInput(context);
           }
 
         } while (LoggedInCustomer.UserName != null || loggedInMenuInput > 5);
@@ -476,16 +475,54 @@ namespace p0_2
       return choice;
     }
 
-    static int OrdersMenuInput(DatabaseContext context)
+    static void OrdersMenuInput(DatabaseContext context)
     {
-      var orders = context.Orders.ToList();
-
-      foreach (var o in orders)
+      int orderChoice;
+      bool orderInputInt;
+      do
       {
-        Console.WriteLine($"{o.CustomerId} {o.TimeOfOrder}");
-      }
+        Console.WriteLine("1) View order details \n2) View order history of location\n3) View order history of customer");
 
-      return 0;
+        string input = Console.ReadLine();
+        orderInputInt = int.TryParse(input, out orderChoice);
+      } while (!orderInputInt || orderChoice <= 0 || orderChoice > 3);
+
+
+      if (orderChoice == 1)
+      {
+        var orders = context.Orders.Where(o => o.CustomerId == LoggedInCustomer.CustomerId).ToList();
+        Console.WriteLine($"Displaying order details for {LoggedInCustomer.UserName}");
+        foreach (var o in orders)
+        {
+          Console.WriteLine($"OrderId {o.OrderId}\nTimeOfOrder {o.TimeOfOrder}\nStoreAddress {o.StoreAddress}");
+        }
+      }
+      else if (orderChoice == 2)
+      {
+        int locationChoice;
+        bool locationInputInt;
+
+        do
+        {
+          Console.WriteLine($"\nChoose a location to view its order history.");
+
+          for (int i = 0; i < context.Stores.ToList().Count; i++)
+          {
+            Console.WriteLine($"Locations {i + 1}) {context.Stores.ToList()[i].State}");
+          }
+
+          string input = Console.ReadLine();
+          locationInputInt = int.TryParse(input, out locationChoice);
+        } while (!locationInputInt || locationChoice <= 0 || locationChoice > 4);
+
+        var store = context.Stores.Where(s => s.StoreId == locationChoice).FirstOrDefault();
+        var orders = context.Orders.Where(o => o.StoreAddress == store.ToString());
+
+        foreach (var o in orders)
+        {
+          Console.WriteLine($"OrderId{o.OrderId}\nTimeOfOrder {o.TimeOfOrder}");
+        }
+      }
     }
 
     static int StartMenuInput()
@@ -548,6 +585,9 @@ namespace p0_2
         Console.WriteLine($"products to add to order {p.Title}");
         p.ShoppingCartId = 0;
       }
+
+      storeOfProducts.Inventory -= productsToAddToOrder.ToList().Count;
+
       shoppingCart.AmountOfProducts = 0;
       Console.WriteLine($"{order.Products[0].Author}   {order.Products[0].ProductId}");
 

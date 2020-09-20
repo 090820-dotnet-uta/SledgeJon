@@ -16,7 +16,7 @@ namespace p0_2.Models
 
     public override string ToString()
     {
-      return $"{StoreId}\n{StreetAddress}\n{City}\n{StreetAddress}\n{State}\n{ZIP}\n{Inventory}";
+      return $"{StreetAddress}, {City}, {State} {ZIP}";
     }
   }
 }
