@@ -37,40 +37,46 @@ namespace p0_2
           }
           else if (startMenuChoice == 3) Environment.Exit(0);
 
+
+          int loggedInMenuInput;
+          int locationMenuChoice;
+          do
+          {
+            // Logged in display UI inputs
+            loggedInMenuInput = LoggedInMenuInput(context);
+            if (loggedInMenuInput == 1)
+            {
+              // Locations display UI inputs
+              locationMenuChoice = LocationsMenuInput(context);
+
+              // Products of location UI inputs
+              int productsMenuChoice = ProductsMenuInput(context, locationMenuChoice);
+            }
+            else if (loggedInMenuInput == 2)
+            {
+              GetCart(context);
+            }
+            else if (loggedInMenuInput == 3)
+            {
+              GetCustomers(context);
+            }
+            else if (loggedInMenuInput == 4)
+            {
+              PlaceOrder(context);
+            }
+            else if (loggedInMenuInput == 5)
+            {
+              OrdersMenuInput(context);
+            }
+            else if (loggedInMenuInput == 6)
+            {
+              LoggedInCustomer = new Customer();
+            }
+
+          } while (LoggedInCustomer.UserName != null || loggedInMenuInput > 6);
+
         } while (LoggedInCustomer.UserName == null);
 
-        int loggedInMenuInput;
-        int locationMenuChoice;
-        do
-        {
-          // Logged in display UI inputs
-          loggedInMenuInput = LoggedInMenuInput(context);
-          if (loggedInMenuInput == 1)
-          {
-            // Locations display UI inputs
-            locationMenuChoice = LocationsMenuInput(context);
-
-            // Products of location UI inputs
-            int productsMenuChoice = ProductsMenuInput(context, locationMenuChoice);
-          }
-          else if (loggedInMenuInput == 2)
-          {
-            GetCart(context);
-          }
-          else if (loggedInMenuInput == 3)
-          {
-            GetCustomers(context);
-          }
-          else if (loggedInMenuInput == 4)
-          {
-            PlaceOrder(context);
-          }
-          else if (loggedInMenuInput == 5)
-          {
-            OrdersMenuInput(context);
-          }
-
-        } while (LoggedInCustomer.UserName != null || loggedInMenuInput > 5);
       }
     }
 
@@ -151,6 +157,9 @@ namespace p0_2
             newCustomer.ShoppingCart = newShoppingCart;
             context.Customers.Add(newCustomer);
             context.SaveChanges();
+            var c = context.Customers.Where(c => c.UserName == newCustomer.UserName).FirstOrDefault();
+            LoggedInCustomer = c;
+            break;
           }
         }
       }
@@ -158,9 +167,10 @@ namespace p0_2
       {
         ShoppingCart newShoppingCart = new ShoppingCart();
         newCustomer.ShoppingCart = newShoppingCart;
-
         context.Customers.Add(newCustomer);
         context.SaveChanges();
+        var c = context.Customers.Where(c => c.UserName == newCustomer.UserName).FirstOrDefault();
+        LoggedInCustomer = c;
       }
     }
 
@@ -365,11 +375,11 @@ namespace p0_2
       bool inputInt;
       do
       {
-        Console.WriteLine($"\nWelcome {LoggedInCustomer.UserName}, \n1) View Locations \n2) View Shopping Cart \n3) View Customers \n4) Place Order \n5) View Orders");
+        Console.WriteLine($"\nWelcome {LoggedInCustomer.UserName}, \n1) View Locations \n2) View Shopping Cart \n3) View Customers \n4) Place Order \n5) View Orders \n6) Logout");
 
         string input = Console.ReadLine();
         inputInt = int.TryParse(input, out choice);
-      } while (!inputInt || choice <= 0 || choice > 5);
+      } while (!inputInt || choice <= 0 || choice > 6);
       return choice;
 
     }
@@ -494,7 +504,7 @@ namespace p0_2
         Console.WriteLine($"Displaying order details for {LoggedInCustomer.UserName}");
         foreach (var o in orders)
         {
-          Console.WriteLine($"OrderId {o.OrderId}\nTimeOfOrder {o.TimeOfOrder}\nStoreAddress {o.StoreAddress}");
+          Console.WriteLine($" OrderId {o.OrderId}\n TimeOfOrder {o.TimeOfOrder}\n StoreAddress {o.StoreAddress}");
         }
       }
       else if (orderChoice == 2)
@@ -520,9 +530,39 @@ namespace p0_2
 
         foreach (var o in orders)
         {
-          Console.WriteLine($"OrderId{o.OrderId}\nTimeOfOrder {o.TimeOfOrder}");
+          Console.WriteLine($" OrderId{o.OrderId}\n TimeOfOrder {o.TimeOfOrder}");
         }
       }
+      else if (orderChoice == 3)
+      {
+        List<int> IDRange = new List<int>();
+        int customerChoice;
+        bool customerInputInt;
+        var customers = context.Customers.ToList();
+
+        do
+        {
+          Console.WriteLine($"\nChoose a customer to view their order history.");
+
+          for (int i = 0; i < customers.Count; i++)
+          {
+            IDRange.Add(i + 1);
+            Console.WriteLine($"Customer {i + 1}) {customers[i].UserName}");
+          }
+
+          string input = Console.ReadLine();
+          customerInputInt = int.TryParse(input, out customerChoice);
+        } while (!customerInputInt || !IDRange.Contains(customerChoice));
+
+        var orders = context.Orders.Where(o => o.CustomerId == customerChoice);
+
+        Console.WriteLine($"Here is the order history for {customers[customerChoice - 1].UserName}");
+        foreach (var o in orders.ToList())
+        {
+          Console.WriteLine($" OrderId {o.OrderId}\n TimeOfOrder{o.TimeOfOrder}");
+        }
+      }
+
     }
 
     static int StartMenuInput()
@@ -571,12 +611,20 @@ namespace p0_2
     static void PlaceOrder(DatabaseContext context)
     {
       Order order = new Order();
+      List<OrderProduct> orderProducts = new List<OrderProduct>();
       var productsToAddToOrder = context.Products.Where(p => p.ShoppingCartId == LoggedInCustomer.ShoppingCartId);
       var storeOfProducts = context.Stores.Where(s => s.StoreId == productsToAddToOrder.ToList()[0].StoreId).FirstOrDefault();
       var shoppingCart = context.ShoppingCarts.Where(sh => sh.ShoppingCartId == LoggedInCustomer.ShoppingCartId).FirstOrDefault();
 
+      foreach (var p in productsToAddToOrder)
+      {
+        OrderProduct orderProduct = new OrderProduct();
+        orderProduct.ProductId = p.ProductId;
+        orderProducts.Add(orderProduct);
+      }
+
       order.TimeOfOrder = DateTime.Now;
-      order.Products = productsToAddToOrder.ToList();
+      order.OrderProducts = orderProducts;
       order.CustomerId = LoggedInCustomer.CustomerId;
       order.StoreAddress = $"{storeOfProducts.StreetAddress}, {storeOfProducts.City}, {storeOfProducts.State} {storeOfProducts.ZIP}";
 
@@ -587,9 +635,7 @@ namespace p0_2
       }
 
       storeOfProducts.Inventory -= productsToAddToOrder.ToList().Count;
-
       shoppingCart.AmountOfProducts = 0;
-      Console.WriteLine($"{order.Products[0].Author}   {order.Products[0].ProductId}");
 
       context.Orders.Add(order);
       context.SaveChanges();

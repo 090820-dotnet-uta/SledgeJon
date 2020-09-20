@@ -12,12 +12,13 @@ namespace p0_2.Models
     public DbSet<Product> Products { get; set; }
     public DbSet<ShoppingCart> ShoppingCarts { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderProduct> OrderProducts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       if (!optionsBuilder.IsConfigured)
       {
-        optionsBuilder.UseSqlServer("Data Source=DESKTOP-EQEIR3A;Initial Catalog=p0_2;Integrated Security=True");
+        optionsBuilder.UseSqlServer("Data Source=DESKTOP-EQEIR3A;Initial Catalog=p0_3;Integrated Security=True");
       }
       base.OnConfiguring(optionsBuilder);
     }

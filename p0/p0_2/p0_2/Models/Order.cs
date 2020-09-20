@@ -11,6 +11,7 @@ namespace p0_2.Models
     public Customer Customer { get; set; }
     public int CustomerId { get; set; }
     public DateTime TimeOfOrder { get; set; }
-    public List<Product> Products { get; set; }
+    //public List<Product> Products { get; set; }
+    public List<OrderProduct> OrderProducts { get; set; }
   }
 }
