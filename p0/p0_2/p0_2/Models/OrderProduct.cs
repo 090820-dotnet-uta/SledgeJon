@@ -9,5 +9,7 @@ namespace p0_2.Models
     public int OrderProductId { get; set; }
     public int ProductId { get; set; }
     public int OrderId { get; set; }
+    public int StoreId { get; set; }
+    public int CustomerId { get; set; }
   }
 }

@@ -10,9 +10,9 @@ namespace p0_2.Models
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Store> Stores { get; set; }
     public DbSet<Product> Products { get; set; }
-    public DbSet<ShoppingCart> ShoppingCarts { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
+    public DbSet<Inventory> Inventories { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

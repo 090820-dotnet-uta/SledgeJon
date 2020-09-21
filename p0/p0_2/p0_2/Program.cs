@@ -1,13 +1,20 @@
-﻿using p0_2.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using p0_2.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace p0_2
 {
+  class ShoppingCart
+  {
+    public List<Inventory> Inventories { get; set; } = new List<Inventory>();
+  }
   class Program
   {
     public static Customer LoggedInCustomer = new Customer();
+    public static ShoppingCart ShoppingCart = new ShoppingCart();
+
     static void Main(string[] args)
     {
       using (var context = new DatabaseContext())
@@ -50,11 +57,11 @@ namespace p0_2
               locationMenuChoice = LocationsMenuInput(context);
 
               // Products of location UI inputs
-              int productsMenuChoice = ProductsMenuInput(context, locationMenuChoice);
+              ProductsMenuInput(context, locationMenuChoice);
             }
             else if (loggedInMenuInput == 2)
             {
-              GetCart(context);
+              GetCart();
             }
             else if (loggedInMenuInput == 3)
             {
@@ -71,6 +78,17 @@ namespace p0_2
             else if (loggedInMenuInput == 6)
             {
               LoggedInCustomer = new Customer();
+
+              if (ShoppingCart.Inventories.Count == 0)
+              {
+                ShoppingCart = new ShoppingCart();
+              }
+              else
+              {
+                context.ChangeTracker.Entries().Where(e => e.Entity != null).ToList().ForEach(e => e.State = EntityState.Detached);
+                ShoppingCart = new ShoppingCart();
+              }
+
             }
 
           } while (LoggedInCustomer.UserName != null || loggedInMenuInput > 6);
@@ -146,15 +164,13 @@ namespace p0_2
               username = username.Trim();
             } while (username.Length == 0 || username == newCustomer.UserName);
             newCustomer.UserName = username;
-            ShoppingCart newShoppingCart = new ShoppingCart();
-            newCustomer.ShoppingCart = newShoppingCart;
             context.Customers.Add(newCustomer);
             context.SaveChanges();
+            var c = context.Customers.Where(c => c.UserName == newCustomer.UserName).FirstOrDefault();
+            LoggedInCustomer = c;
           }
           else
           {
-            ShoppingCart newShoppingCart = new ShoppingCart();
-            newCustomer.ShoppingCart = newShoppingCart;
             context.Customers.Add(newCustomer);
             context.SaveChanges();
             var c = context.Customers.Where(c => c.UserName == newCustomer.UserName).FirstOrDefault();
@@ -165,8 +181,6 @@ namespace p0_2
       }
       else
       {
-        ShoppingCart newShoppingCart = new ShoppingCart();
-        newCustomer.ShoppingCart = newShoppingCart;
         context.Customers.Add(newCustomer);
         context.SaveChanges();
         var c = context.Customers.Where(c => c.UserName == newCustomer.UserName).FirstOrDefault();
@@ -251,7 +265,7 @@ namespace p0_2
         },
       };
 
-      List<Product> store1Products = new List<Product>()
+      List<Product> products = new List<Product>()
       {
         new Product()
         {
@@ -281,10 +295,6 @@ namespace p0_2
           Description = "Ulysses is a modernist novel by Irish writer James Joyce.",
           Price = 15.50
         },
-      };
-
-      List<Product> store2Products = new List<Product>()
-      {
         new Product()
         {
           Title = "The Sound and the Fury",
@@ -315,16 +325,35 @@ namespace p0_2
         },
       };
 
-      stores[0].Products = store1Products;
-      stores[0].Inventory = store1Products.Count;
-      stores[1].Products = store2Products;
-      stores[1].Inventory = store2Products.Count;
+      foreach (var prod in products)
+      {
+        context.Products.Add(prod);
+      }
+
+      context.SaveChanges();
+
+
+      var prodContext = context.Products.ToList();
+
+      foreach (var store in stores)
+      {
+        List<Inventory> inventories = new List<Inventory>();
+        foreach (var prod in prodContext)
+        {
+          Inventory inventory = new Inventory();
+          inventory.ProductId = prod.ProductId;
+          inventory.Amount = 2;
+          inventories.Add(inventory);
+        }
+        store.Inventories = inventories;
+      }
 
       foreach (var store in stores)
       {
         context.Stores.Add(store);
       }
       context.SaveChanges();
+
     }
 
     //static void SeedProducts(DatabaseContext context)
@@ -403,56 +432,88 @@ namespace p0_2
       return choice;
     }
 
-    static int ProductsMenuInput(DatabaseContext context, int locationMenuChoice)
+    static void ProductsMenuInput(DatabaseContext context, int locationMenuChoice)
     {
       List<int> IDRange = new List<int>();
 
       if (locationMenuChoice == 1)
       {
-        var nameOfLocation = context.Stores.Where(s => s.StoreId == locationMenuChoice).FirstOrDefault();
-        var listOfvalues = context.Products.Where(p => p.StoreId == locationMenuChoice);
-        Console.WriteLine($"Here are the books available in the {nameOfLocation.State} location");
-        foreach (var i in listOfvalues)
+        var stores = context.Stores.Where(s => s.StoreId == locationMenuChoice).FirstOrDefault();
+        var inventories = context.Inventories.Where(i => i.StoreId == locationMenuChoice).OrderBy(pid => pid.ProductId).ToList();
+        var products = context.Products.ToList();
+
+        Console.WriteLine($"Here are the books available in the {stores.State} location");
+
+        foreach (var inv in inventories)
         {
-          Console.WriteLine($"\nTo select the book below, enter {i.ProductId}");
-          IDRange.Add(i.ProductId);
-          Console.WriteLine(i.ToString());
+          Console.WriteLine($"InvId {inv.InventoryId} ProdId {inv.ProductId} StoreId {inv.StoreId} Amount {inv.Amount}");
+        }
+
+        for (int i = 0; i < products.Count; i++)
+        {
+          Console.WriteLine($"\nTo select the book below, enter {products[i].ProductId}. There are {inventories[i].Amount} available.");
+          IDRange.Add(products[i].ProductId);
+          Console.WriteLine(products[i].ToString());
         }
       }
       else if (locationMenuChoice == 2)
       {
-        var nameOfLocation = context.Stores.Where(s => s.StoreId == locationMenuChoice).FirstOrDefault();
-        var listOfvalues = context.Products.Where(p => p.StoreId == locationMenuChoice);
-        Console.WriteLine($"Here are the books available in the {nameOfLocation.State} location");
-        foreach (var i in listOfvalues)
+        var stores = context.Stores.Where(s => s.StoreId == locationMenuChoice).FirstOrDefault();
+        var inventories = context.Inventories.Where(i => i.StoreId == locationMenuChoice).OrderBy(pid => pid.ProductId).ToList();
+        var products = context.Products.ToList();
+
+        Console.WriteLine($"Here are the books available in the {stores.State} location");
+
+        foreach (var inv in inventories)
         {
-          Console.WriteLine($"\nTo select the book below, enter {i.ProductId}");
-          IDRange.Add(i.ProductId);
-          Console.WriteLine(i.ToString());
+          Console.WriteLine($"InvId {inv.InventoryId} ProdId {inv.ProductId} StoreId {inv.StoreId} Amount {inv.Amount}");
+        }
+
+        for (int i = 0; i < products.Count; i++)
+        {
+          Console.WriteLine($"\nTo select the book below, enter {products[i].ProductId}. There are {inventories[i].Amount} available.");
+          IDRange.Add(products[i].ProductId);
+          Console.WriteLine(products[i].ToString());
         }
       }
       else if (locationMenuChoice == 3)
       {
-        var nameOfLocation = context.Stores.Where(s => s.StoreId == locationMenuChoice).FirstOrDefault();
-        var listOfvalues = context.Products.Where(p => p.StoreId == locationMenuChoice);
-        Console.WriteLine($"Here are the books available in the {nameOfLocation.State} location");
-        foreach (var i in listOfvalues)
+        var stores = context.Stores.Where(s => s.StoreId == locationMenuChoice).FirstOrDefault();
+        var inventories = context.Inventories.Where(i => i.StoreId == locationMenuChoice).OrderBy(pid => pid.ProductId).ToList();
+        var products = context.Products.ToList();
+
+        Console.WriteLine($"Here are the books available in the {stores.State} location");
+
+        foreach (var inv in inventories)
         {
-          Console.WriteLine($"\nTo select the book below, enter {i.ProductId}");
-          IDRange.Add(i.ProductId);
-          Console.WriteLine(i.ToString());
+          Console.WriteLine($"InvId {inv.InventoryId} ProdId {inv.ProductId} StoreId {inv.StoreId} Amount {inv.Amount}");
+        }
+
+        for (int i = 0; i < products.Count; i++)
+        {
+          Console.WriteLine($"\nTo select the book below, enter {products[i].ProductId}. There are {inventories[i].Amount} available.");
+          IDRange.Add(products[i].ProductId);
+          Console.WriteLine(products[i].ToString());
         }
       }
       else if (locationMenuChoice == 4)
       {
-        var nameOfLocation = context.Stores.Where(s => s.StoreId == locationMenuChoice).FirstOrDefault();
-        var listOfvalues = context.Products.Where(p => p.StoreId == locationMenuChoice);
-        Console.WriteLine($"Here are the books available in the {nameOfLocation.State} location");
-        foreach (var i in listOfvalues)
+        var stores = context.Stores.Where(s => s.StoreId == locationMenuChoice).FirstOrDefault();
+        var inventories = context.Inventories.Where(i => i.StoreId == locationMenuChoice).OrderBy(pid => pid.ProductId).ToList();
+        var products = context.Products.ToList();
+
+        Console.WriteLine($"Here are the books available in the {stores.State} location");
+
+        foreach (var inv in inventories)
         {
-          Console.WriteLine($"\nTo select the book below, enter {i.ProductId}");
-          IDRange.Add(i.ProductId);
-          Console.WriteLine(i.ToString());
+          Console.WriteLine($"InvId {inv.InventoryId} ProdId {inv.ProductId} StoreId {inv.StoreId} Amount {inv.Amount}");
+        }
+
+        for (int i = 0; i < products.Count; i++)
+        {
+          Console.WriteLine($"\nTo select the book below, enter {products[i].ProductId}. There are {inventories[i].Amount} available.");
+          IDRange.Add(products[i].ProductId);
+          Console.WriteLine(products[i].ToString());
         }
       }
 
@@ -467,22 +528,38 @@ namespace p0_2
 
       var productToAdd = context.Products
         .Where(p => p.ProductId == choice).FirstOrDefault();
+      var inventoryOfProd = context.Inventories.Where(i => i.ProductId == choice && i.StoreId == locationMenuChoice).FirstOrDefault();
 
-      var shoppingCart = context.ShoppingCarts
-        .Where(sh => sh.ShoppingCartId == LoggedInCustomer.ShoppingCartId).FirstOrDefault();
-
-      if (productToAdd.ShoppingCartId == 0)
+      if (inventoryOfProd.Amount == 0)
       {
-        productToAdd.ShoppingCartId = LoggedInCustomer.ShoppingCartId;
-        shoppingCart.AmountOfProducts++;
-        context.SaveChanges();
+        Console.WriteLine("There are no copies left for that book.");
+      }
+      else if (ShoppingCart.Inventories.Count == 0)
+      {
+        inventoryOfProd.Amount--;
+        ShoppingCart.Inventories.Add(inventoryOfProd);
       }
       else
       {
-        Console.WriteLine("That book is already reserved for another customer");
+        for (int i = 0; i < ShoppingCart.Inventories.Count; i++)
+        {
+          if (ShoppingCart.Inventories[i].InventoryId == inventoryOfProd.InventoryId)
+          {
+            int c = ShoppingCart.Inventories.Count(inv => inv.InventoryId == inventoryOfProd.InventoryId);
+            Console.WriteLine($"You're adding same prod from same store im counting {c} so far");
+            inventoryOfProd.Amount--;
+            ShoppingCart.Inventories.Add(inventoryOfProd);
+            break;
+          }
+          else
+          {
+            inventoryOfProd.Amount--;
+            ShoppingCart.Inventories.Add(inventoryOfProd);
+            break;
+          }
+        }
       }
 
-      return choice;
     }
 
     static void OrdersMenuInput(DatabaseContext context)
@@ -500,11 +577,15 @@ namespace p0_2
 
       if (orderChoice == 1)
       {
-        var orders = context.Orders.Where(o => o.CustomerId == LoggedInCustomer.CustomerId).ToList();
+
+        //var orders = context.Orders.Where(o => o.CustomerId == LoggedInCustomer.CustomerId).ToList();
+        var orderProducts = context.OrderProducts.Where(op => op.CustomerId == LoggedInCustomer.CustomerId).ToList();
+
+
         Console.WriteLine($"Displaying order details for {LoggedInCustomer.UserName}");
-        foreach (var o in orders)
+        foreach (var op in orderProducts)
         {
-          Console.WriteLine($" OrderId {o.OrderId}\n TimeOfOrder {o.TimeOfOrder}\n StoreAddress {o.StoreAddress}");
+          Console.WriteLine($" OrderId {op.OrderId}\n StoreId {op.StoreId}\n ProductId {op.ProductId}");
         }
       }
       else if (orderChoice == 2)
@@ -526,11 +607,12 @@ namespace p0_2
         } while (!locationInputInt || locationChoice <= 0 || locationChoice > 4);
 
         var store = context.Stores.Where(s => s.StoreId == locationChoice).FirstOrDefault();
-        var orders = context.Orders.Where(o => o.StoreAddress == store.ToString());
+        //var orders = context.Orders.Where(o => o.StoreAddress == store.ToString());
+        var orderProducts = context.OrderProducts.Where(op => op.StoreId == store.StoreId).ToList();
 
-        foreach (var o in orders)
+        foreach (var op in orderProducts)
         {
-          Console.WriteLine($" OrderId{o.OrderId}\n TimeOfOrder {o.TimeOfOrder}");
+          Console.WriteLine($" OrderId {op.OrderId}\n StoreId {op.StoreId}\n  ProductId {op.ProductId}");
         }
       }
       else if (orderChoice == 3)
@@ -554,12 +636,12 @@ namespace p0_2
           customerInputInt = int.TryParse(input, out customerChoice);
         } while (!customerInputInt || !IDRange.Contains(customerChoice));
 
-        var orders = context.Orders.Where(o => o.CustomerId == customerChoice);
+        var orderProducts = context.OrderProducts.Where(op => op.CustomerId == customerChoice).ToList();
 
         Console.WriteLine($"Here is the order history for {customers[customerChoice - 1].UserName}");
-        foreach (var o in orders.ToList())
+        foreach (var op in orderProducts)
         {
-          Console.WriteLine($" OrderId {o.OrderId}\n TimeOfOrder{o.TimeOfOrder}");
+          Console.WriteLine($" OrderId {op.OrderId}\n StoreId {op.StoreId}\n  ProductId {op.ProductId}");
         }
       }
 
@@ -578,10 +660,21 @@ namespace p0_2
       return choice;
     }
 
-    static void GetCart(DatabaseContext context)
+    static void GetCart()
     {
-      var shoppingCart = context.ShoppingCarts.Where(c => c.ShoppingCartId == LoggedInCustomer.ShoppingCartId).FirstOrDefault();
-      Console.WriteLine($"you have {shoppingCart.AmountOfProducts} item(s) in your cart.");
+      if (ShoppingCart.Inventories.Count == 0)
+      {
+        Console.WriteLine("Your shopping cart is empty");
+      }
+      else
+      {
+        Console.WriteLine($"you have {ShoppingCart.Inventories.Count} item(s) in your cart.");
+        foreach (var sh in ShoppingCart.Inventories)
+        {
+          Console.WriteLine($"InvId{sh.InventoryId} StoreId {sh.StoreId} ProdId {sh.ProductId} Amount {sh.Amount}");
+        }
+
+      }
     }
 
     static void GetCustomers(DatabaseContext context)
@@ -610,35 +703,31 @@ namespace p0_2
 
     static void PlaceOrder(DatabaseContext context)
     {
-      Order order = new Order();
-      List<OrderProduct> orderProducts = new List<OrderProduct>();
-      var productsToAddToOrder = context.Products.Where(p => p.ShoppingCartId == LoggedInCustomer.ShoppingCartId);
-      var storeOfProducts = context.Stores.Where(s => s.StoreId == productsToAddToOrder.ToList()[0].StoreId).FirstOrDefault();
-      var shoppingCart = context.ShoppingCarts.Where(sh => sh.ShoppingCartId == LoggedInCustomer.ShoppingCartId).FirstOrDefault();
-
-      foreach (var p in productsToAddToOrder)
+      if (ShoppingCart.Inventories.Count == 0)
       {
-        OrderProduct orderProduct = new OrderProduct();
-        orderProduct.ProductId = p.ProductId;
-        orderProducts.Add(orderProduct);
+        Console.WriteLine("Your shopping cart is empty, select some items to place an order.");
+        return;
       }
-
-      order.TimeOfOrder = DateTime.Now;
-      order.OrderProducts = orderProducts;
-      order.CustomerId = LoggedInCustomer.CustomerId;
-      order.StoreAddress = $"{storeOfProducts.StreetAddress}, {storeOfProducts.City}, {storeOfProducts.State} {storeOfProducts.ZIP}";
-
-      foreach (var p in productsToAddToOrder)
+      else
       {
-        Console.WriteLine($"products to add to order {p.Title}");
-        p.ShoppingCartId = 0;
+        Order order = new Order();
+        List<OrderProduct> orderProducts = new List<OrderProduct>();
+
+        foreach (var sh in ShoppingCart.Inventories)
+        {
+          OrderProduct orderProduct = new OrderProduct();
+          orderProduct.ProductId = sh.ProductId;
+          orderProduct.StoreId = sh.StoreId;
+          orderProduct.CustomerId = LoggedInCustomer.CustomerId;
+          orderProducts.Add(orderProduct);
+        }
+
+        order.TimeOfOrder = DateTime.Now;
+        order.OrderProducts = orderProducts;
+
+        context.Orders.Add(order);
+        context.SaveChanges();
       }
-
-      storeOfProducts.Inventory -= productsToAddToOrder.ToList().Count;
-      shoppingCart.AmountOfProducts = 0;
-
-      context.Orders.Add(order);
-      context.SaveChanges();
     }
   }
 }

@@ -11,8 +11,6 @@ namespace p0_2.Models
     public string Author { get; set; }
     public string Description { get; set; }
     public double Price { get; set; }
-    public int StoreId { get; set; }
-    public int ShoppingCartId { get; set; }
 
     public override string ToString()
     {

@@ -11,8 +11,6 @@ namespace p0_2.Models
     public string LastName { get; set; }
     public string UserName { get; set; }
     public string Password { get; set; }
-    public ShoppingCart ShoppingCart { get; set; }
-    public int ShoppingCartId { get; set; }
     public override string ToString()
     {
       return $"{CustomerId}\n{FirstName}\n{LastName}\n{UserName}";
