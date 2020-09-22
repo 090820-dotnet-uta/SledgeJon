@@ -86,7 +86,7 @@ namespace p0_2
                 helperMethods.GetCustomers(context);
                 break;
               case 4:
-                helperMethods.PlaceOrder(context, ShoppingCart, LoggedInCustomer);
+                helperMethods.PlaceOrder(context, ref ShoppingCart, LoggedInCustomer);
                 break;
               case 5:
                 helperMethods.OrdersMenuInput(context, LoggedInCustomer);

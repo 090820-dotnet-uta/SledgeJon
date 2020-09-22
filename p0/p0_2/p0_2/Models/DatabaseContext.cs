@@ -7,6 +7,13 @@ namespace p0_2.Models
 {
   public class DatabaseContext : DbContext
   {
+    public DatabaseContext() { }
+
+    public DatabaseContext(DbContextOptions<DatabaseContext> options)
+      : base(options)
+    {
+    }
+
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Store> Stores { get; set; }
     public DbSet<Product> Products { get; set; }

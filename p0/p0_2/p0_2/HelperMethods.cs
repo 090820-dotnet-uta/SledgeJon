@@ -8,8 +8,8 @@ namespace p0_2
 {
   public class ShoppingCart : IShoppingCart
   {
-    public List<Inventory> Inventories { get; set; } = new List<Inventory>();
-    public double Total { get; set; } = 0;
+    public List<Inventory> Inventories { get; set; } = new List<Inventory>(); //for holding the relevant information for products
+    public double Total { get; set; } = 0; //Calculating total before placing order
 
     public bool IsEmpty() => Inventories.Count == 0;
   }
@@ -21,11 +21,18 @@ namespace p0_2
 
   public class HelperMethods
   {
+    /// <summary>
+    /// Start menu for greeting the user
+    /// </summary>
     public void StartMenu()
     {
       Console.WriteLine("Welcome to Bookopolis!\nWe have the greatest selection of books at the best prices");
     }
 
+    /// <summary>
+    /// Start menu for login and sign up
+    /// </summary>
+    /// <returns>int</returns>
     public int StartMenuInput()
     {
       int choice;
@@ -39,6 +46,10 @@ namespace p0_2
       return choice;
     }
 
+    /// <summary>
+    /// Sign up method for getting customer object to add to database
+    /// </summary>
+    /// <returns>Customer</returns>
     public Customer SignUp()
     {
       string firstname, lastname, username, password;
@@ -80,6 +91,11 @@ namespace p0_2
       return c;
     }
 
+    /// <summary>
+    /// Log in method for logging into application. Checks if the user exists in the database
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="LoggedInCustomer"></param>
     public void Login(DatabaseContext context, ref Customer LoggedInCustomer)
     {
       string username, password;
@@ -113,6 +129,12 @@ namespace p0_2
       }
     }
 
+    /// <summary>
+    /// Adds customer to db. Checks if username is already taken, or if db currently has no users
+    /// </summary>
+    /// <param name="newCustomer"></param>
+    /// <param name="context"></param>
+    /// <param name="LoggedInCustomer"></param>
     public void AddCustomerToDB(Customer newCustomer, DatabaseContext context, ref Customer LoggedInCustomer)
     {
       if (context.Customers.ToList().Count > 0)
@@ -154,6 +176,11 @@ namespace p0_2
       }
     }
 
+    /// <summary>
+    /// Menu for application options after user has logged in
+    /// </summary>
+    /// <param name="LoggedInCustomer"></param>
+    /// <returns>int</returns>
     public int LoggedInMenuInput(Customer LoggedInCustomer)
     {
       int choice;
@@ -168,6 +195,11 @@ namespace p0_2
       return choice;
     }
 
+    /// <summary>
+    /// Menu if user chooses to vies locations. Outputs all locations and allows user to select one to view it's products
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns>int</returns>
     public int LocationsMenuInput(DatabaseContext context)
     {
       int choice;
@@ -184,6 +216,13 @@ namespace p0_2
       return choice;
     }
 
+    /// <summary>
+    /// Menu for after use has chosen location to view it's products. outputs all products and their amounts and lets user
+    /// select one. Checks if it is in stock and if it is already present in the shopping cart.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="locationMenuChoice"></param>
+    /// <param name="ShoppingCart"></param>
     public void ProductsMenuInput(DatabaseContext context, int locationMenuChoice, ref ShoppingCart ShoppingCart)
     {
       List<int> IDRange = new List<int>();
@@ -316,6 +355,11 @@ namespace p0_2
       }
     }
 
+    /// <summary>
+    /// Menu for after user has chosen to view orders. Allows user to choose three types of order outputs.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="LoggedInCustomer"></param>
     public void OrdersMenuInput(DatabaseContext context, Customer LoggedInCustomer)
     {
       int orderChoice;
@@ -410,16 +454,28 @@ namespace p0_2
 
         var orderProducts = context.OrderProducts.Where(op => op.CustomerId == customerChoice).ToList();
 
+        var addresses = (from s in context.Stores
+                         from op in context.OrderProducts
+                         where op.CustomerId == customerChoice && s.StoreId == op.StoreId
+                         select new { s.StreetAddress, s.City, s.State, op.OrderId }).OrderBy(op => op.OrderId);
+
         Console.WriteLine($"Here is the order history for {customers[customerChoice - 1].UserName}");
-        foreach (var op in orderProducts)
+        foreach (var add in addresses)
         {
-          Console.WriteLine($" OrderId {op.OrderId}\n StoreId {op.StoreId}\n  ProductId {op.ProductId}");
+          Console.WriteLine($"OrderId {add.OrderId} Store location {add.StreetAddress} {add.City} {add.State}");
         }
       }
 
     }
 
-    public void PlaceOrder(DatabaseContext context, ShoppingCart ShoppingCart, Customer LoggedInCustomer)
+    /// <summary>
+    /// places order based on the products currently in the user's shopping cart. if no items are present, it
+    /// gives a warning and redirects to logged in menu
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="ShoppingCart"></param>
+    /// <param name="LoggedInCustomer"></param>
+    public void PlaceOrder(DatabaseContext context, ref ShoppingCart ShoppingCart, Customer LoggedInCustomer)
     {
       if (ShoppingCart.IsEmpty())
       {
@@ -447,10 +503,15 @@ namespace p0_2
         order.Total = ShoppingCart.Total;
 
         context.Orders.Add(order);
+        ShoppingCart = new ShoppingCart();
         context.SaveChanges();
       }
     }
 
+    /// <summary>
+    /// shows the current amount of products in the cart and the total price
+    /// </summary>
+    /// <param name="ShoppingCart"></param>
     public void GetCart(ShoppingCart ShoppingCart)
     {
       if (ShoppingCart.IsEmpty()) Console.WriteLine("Your shopping cart is empty");
@@ -461,6 +522,10 @@ namespace p0_2
       }
     }
 
+    /// <summary>
+    /// searches for customer by username input by user
+    /// </summary>
+    /// <param name="context"></param>
     public void GetCustomers(DatabaseContext context)
     {
       string name;
@@ -480,6 +545,10 @@ namespace p0_2
       }
     }
 
+    /// <summary>
+    /// seed method for inserting stores and products into the database
+    /// </summary>
+    /// <param name="context"></param>
     public void SeedStores(DatabaseContext context)
     {
       List<Store> stores = new List<Store>()
