@@ -6,7 +6,7 @@ using System.Text;
 
 namespace p0_2
 {
-  class ShoppingCart : IShoppingCart
+  public class ShoppingCart : IShoppingCart
   {
     public List<Inventory> Inventories { get; set; } = new List<Inventory>();
     public double Total { get; set; } = 0;
@@ -19,14 +19,14 @@ namespace p0_2
     bool IsEmpty();
   }
 
-  class HelperMethods
+  public class HelperMethods
   {
-    public static void StartMenu()
+    public void StartMenu()
     {
       Console.WriteLine("Welcome to Bookopolis!\nWe have the greatest selection of books at the best prices");
     }
 
-    public static int StartMenuInput()
+    public int StartMenuInput()
     {
       int choice;
       bool inputInt;
@@ -39,7 +39,7 @@ namespace p0_2
       return choice;
     }
 
-    public static Customer SignUp()
+    public Customer SignUp()
     {
       string firstname, lastname, username, password;
       Customer c = new Customer();
@@ -80,7 +80,7 @@ namespace p0_2
       return c;
     }
 
-    public static void Login(DatabaseContext context, ref Customer LoggedInCustomer)
+    public void Login(DatabaseContext context, ref Customer LoggedInCustomer)
     {
       string username, password;
 
@@ -113,7 +113,7 @@ namespace p0_2
       }
     }
 
-    public static void AddCustomerToDB(Customer newCustomer, DatabaseContext context, ref Customer LoggedInCustomer)
+    public void AddCustomerToDB(Customer newCustomer, DatabaseContext context, ref Customer LoggedInCustomer)
     {
       if (context.Customers.ToList().Count > 0)
       {
@@ -154,7 +154,7 @@ namespace p0_2
       }
     }
 
-    public static int LoggedInMenuInput(Customer LoggedInCustomer)
+    public int LoggedInMenuInput(Customer LoggedInCustomer)
     {
       int choice;
       bool inputInt;
@@ -168,7 +168,7 @@ namespace p0_2
       return choice;
     }
 
-    public static int LocationsMenuInput(DatabaseContext context)
+    public int LocationsMenuInput(DatabaseContext context)
     {
       int choice;
       bool inputInt;
@@ -184,7 +184,7 @@ namespace p0_2
       return choice;
     }
 
-    public static void ProductsMenuInput(DatabaseContext context, int locationMenuChoice, ref ShoppingCart ShoppingCart)
+    public void ProductsMenuInput(DatabaseContext context, int locationMenuChoice, ref ShoppingCart ShoppingCart)
     {
       List<int> IDRange = new List<int>();
 
@@ -316,7 +316,7 @@ namespace p0_2
       }
     }
 
-    public static void OrdersMenuInput(DatabaseContext context, Customer LoggedInCustomer)
+    public void OrdersMenuInput(DatabaseContext context, Customer LoggedInCustomer)
     {
       int orderChoice;
       bool orderInputInt;
@@ -419,7 +419,7 @@ namespace p0_2
 
     }
 
-    public static void PlaceOrder(DatabaseContext context, ShoppingCart ShoppingCart, Customer LoggedInCustomer)
+    public void PlaceOrder(DatabaseContext context, ShoppingCart ShoppingCart, Customer LoggedInCustomer)
     {
       if (ShoppingCart.IsEmpty())
       {
@@ -451,7 +451,7 @@ namespace p0_2
       }
     }
 
-    public static void GetCart(ShoppingCart ShoppingCart)
+    public void GetCart(ShoppingCart ShoppingCart)
     {
       if (ShoppingCart.IsEmpty()) Console.WriteLine("Your shopping cart is empty");
       else
@@ -461,7 +461,7 @@ namespace p0_2
       }
     }
 
-    public static void GetCustomers(DatabaseContext context)
+    public void GetCustomers(DatabaseContext context)
     {
       string name;
       do
@@ -480,7 +480,7 @@ namespace p0_2
       }
     }
 
-    public static void SeedStores(DatabaseContext context)
+    public void SeedStores(DatabaseContext context)
     {
       List<Store> stores = new List<Store>()
       {
@@ -590,6 +590,8 @@ namespace p0_2
 
       foreach (var store in stores) context.Stores.Add(store);
       context.SaveChanges();
+
+      Console.WriteLine("Successfully seeded the database");
     }
   }
 }

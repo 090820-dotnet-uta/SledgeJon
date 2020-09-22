@@ -4,7 +4,7 @@ using System.Text;
 
 namespace p0_2.Models
 {
-  class OrderProduct
+  public class OrderProduct
   {
     public int OrderProductId { get; set; }
     public int ProductId { get; set; }

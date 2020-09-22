@@ -4,7 +4,7 @@ using System.Text;
 
 namespace p0_2.Models
 {
-  class Store
+  public class Store
   {
     public int StoreId { get; set; }
     public string StreetAddress { get; set; }

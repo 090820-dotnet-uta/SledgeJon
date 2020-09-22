@@ -13,28 +13,29 @@ namespace p0_2
     {
       using (var context = new DatabaseContext())
       {
+
         Customer LoggedInCustomer = new Customer();
         ShoppingCart ShoppingCart = new ShoppingCart();
-
+        HelperMethods helperMethods = new HelperMethods();
         //UNCOMMENT TO SEED THE DATABASE
-        //HelperMethods.SeedStores(context);
+        //helperMethods.SeedStores(context);
         //Console.ReadLine();
 
-        HelperMethods.StartMenu();
+        helperMethods.StartMenu();
         int startMenuChoice;
         do
         {
-          startMenuChoice = HelperMethods.StartMenuInput();
+          startMenuChoice = helperMethods.StartMenuInput();
           switch (startMenuChoice)
           {
             case 1:
-              HelperMethods.Login(context, ref LoggedInCustomer);
+              helperMethods.Login(context, ref LoggedInCustomer);
               Console.WriteLine(LoggedInCustomer.UserName);
               break;
             case 2:
               Console.WriteLine("Signing up");
-              Customer newCustomer = HelperMethods.SignUp();
-              HelperMethods.AddCustomerToDB(newCustomer, context, ref LoggedInCustomer);
+              Customer newCustomer = helperMethods.SignUp();
+              helperMethods.AddCustomerToDB(newCustomer, context, ref LoggedInCustomer);
               break;
             case 3:
               Environment.Exit(0);
@@ -47,16 +48,16 @@ namespace p0_2
           // If initial login fails, catch with this loop
           while (LoggedInCustomer.UserName == null)
           {
-            startMenuChoice = HelperMethods.StartMenuInput();
+            startMenuChoice = helperMethods.StartMenuInput();
             switch (startMenuChoice)
             {
               case 1:
-                HelperMethods.Login(context, ref LoggedInCustomer);
+                helperMethods.Login(context, ref LoggedInCustomer);
                 break;
               case 2:
                 Console.WriteLine("Signing up");
-                Customer newCustomer = HelperMethods.SignUp();
-                HelperMethods.AddCustomerToDB(newCustomer, context, ref LoggedInCustomer);
+                Customer newCustomer = helperMethods.SignUp();
+                helperMethods.AddCustomerToDB(newCustomer, context, ref LoggedInCustomer);
                 break;
               case 3:
                 Environment.Exit(0);
@@ -71,24 +72,24 @@ namespace p0_2
           int locationMenuChoice;
           do
           {
-            loggedInMenuInput = HelperMethods.LoggedInMenuInput(LoggedInCustomer);
+            loggedInMenuInput = helperMethods.LoggedInMenuInput(LoggedInCustomer);
             switch (loggedInMenuInput)
             {
               case 1:
-                locationMenuChoice = HelperMethods.LocationsMenuInput(context);
-                HelperMethods.ProductsMenuInput(context, locationMenuChoice, ref ShoppingCart);
+                locationMenuChoice = helperMethods.LocationsMenuInput(context);
+                helperMethods.ProductsMenuInput(context, locationMenuChoice, ref ShoppingCart);
                 break;
               case 2:
-                HelperMethods.GetCart(ShoppingCart);
+                helperMethods.GetCart(ShoppingCart);
                 break;
               case 3:
-                HelperMethods.GetCustomers(context);
+                helperMethods.GetCustomers(context);
                 break;
               case 4:
-                HelperMethods.PlaceOrder(context, ShoppingCart, LoggedInCustomer);
+                helperMethods.PlaceOrder(context, ShoppingCart, LoggedInCustomer);
                 break;
               case 5:
-                HelperMethods.OrdersMenuInput(context, LoggedInCustomer);
+                helperMethods.OrdersMenuInput(context, LoggedInCustomer);
                 break;
               case 6:
                 LoggedInCustomer = new Customer();

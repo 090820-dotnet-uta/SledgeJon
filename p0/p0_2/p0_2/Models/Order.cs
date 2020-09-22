@@ -4,7 +4,7 @@ using System.Text;
 
 namespace p0_2.Models
 {
-  class Order
+  public class Order
   {
     public int OrderId { get; set; }
     public DateTime TimeOfOrder { get; set; }
