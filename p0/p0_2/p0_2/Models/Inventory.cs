@@ -12,7 +12,7 @@ namespace p0_2.Models
     public int Amount { get; set; }
     public override string ToString()
     {
-      return $"{InventoryId}\n{ProductId}\n{StoreId}\n{Amount}";
+      return $"InvId {InventoryId} ProdId {ProductId} StoreId {StoreId} Amount {Amount}";
     }
   }
 }

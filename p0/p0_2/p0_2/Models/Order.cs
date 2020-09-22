@@ -8,7 +8,7 @@ namespace p0_2.Models
   {
     public int OrderId { get; set; }
     public DateTime TimeOfOrder { get; set; }
-    //public List<Product> Products { get; set; }
+    public double Total { get; set; }
     public List<OrderProduct> OrderProducts { get; set; }
   }
 }
