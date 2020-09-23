@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPSChallenge", "RPSChallenge\RPSChallenge.csproj", "{DCD43677-7448-4E8D-9B6F-0E5882638AAF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DCD43677-7448-4E8D-9B6F-0E5882638AAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCD43677-7448-4E8D-9B6F-0E5882638AAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCD43677-7448-4E8D-9B6F-0E5882638AAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCD43677-7448-4E8D-9B6F-0E5882638AAF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F0DCEBF0-E7EF-4715-A9B5-AD1A58D5A78B}
+	EndGlobalSection
+EndGlobal
