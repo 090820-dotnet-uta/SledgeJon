@@ -1,0 +1,64 @@
+﻿@model IEnumerable<p1_2.Models.ShoppingCart>
+
+@{
+  ViewData["Title"] = "Index";
+}
+
+<div class="container">
+  <h1 class="text-center text-light display-4">
+    Shopping Cart List
+  </h1>
+
+  <div class="row justify-content-center">
+    @foreach (var item in Model)
+    {
+      <div class="col-lg-4">
+
+        <div class="card bg-dark border border-secondary rounded shadow p-3 my-1 text-center hover">
+          <h3 class="text-light">@Html.DisplayFor(modelItem => item.State)</h3>
+          <h4 class="text-light">@Html.DisplayFor(modelItem => item.Title)</h4>
+          <h5 class="text-light">@Html.DisplayFor(modelItem => item.Author)</h5>
+          <h4>
+            <span class="badge badge-success">
+              $ @Html.DisplayFor(modelItem => item.Price)
+            </span>
+            <button class="btn btn-danger text-white a-none" type="submit">@Html.ActionLink("Delete", "Delete", "ShoppingCart", @item)</button>
+          </h4>
+        </div>
+
+      </div>
+    }
+  </div>
+</div>
+
+<style>
+  .a-none, .a-none:hover, .a-none:focus, .a-none:active {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .a-none {
+    color: inherit;
+  }
+
+    .a-none a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+  .hover:hover {
+    transition: all 0.1s ease-in;
+    transform: scale(1.02);
+  }
+
+  .hover:active {
+    transition: all 0.1s ease-out;
+    transform: scale(1.01);
+  }
+
+    .hover:active::after {
+      transition: all 0.1s ease-in;
+      transform: scale(1.1);
+    }
+</style>
+

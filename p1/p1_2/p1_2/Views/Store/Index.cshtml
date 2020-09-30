@@ -1,0 +1,68 @@
+﻿@model IEnumerable<p1_2.Models.Store>
+
+@{
+  ViewData["Title"] = "Index";
+}
+
+<div class="container">
+  <h1 class="text-center text-light display-4">
+    Store Locations
+  </h1>
+
+  <div class="row justify-content-center">
+    @foreach (var item in Model)
+    {
+      <div class="col-lg-6">
+        <a class="a-none" asp-controller="Store" asp-action="StoreProducts" asp-route-id="@item.StoreId">
+          <div class="card bg-secondary p-3 my-1 text-center hover">
+            <h4 class="text-light">@Html.DisplayFor(modelItem => item.State)</h4>
+            <h5 class="text-light">@Html.DisplayFor(modelItem => item.City)</h5>
+            <h5 class="text-light">@Html.DisplayFor(modelItem => item.StreetAddress)</h5>
+            <h5 class="text-light">@Html.DisplayFor(modelItem => item.ZIP)</h5>
+          </div>
+        </a>
+      </div>
+    }
+  </div>
+</div>
+
+<style>
+  .a-none, .a-none:hover, .a-none:focus, .a-none:active {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .a-none {
+    color: inherit;
+  }
+
+  .hover:hover {
+    transition: all 0.1s ease-in;
+    transform: scale(1.02);
+  }
+
+  .hover:active {
+    transition: all 0.1s ease-out;
+    transform: scale(1.01);
+  }
+
+    .hover:active::after {
+      transition: all 0.1s ease-in;
+      transform: scale(1.1);
+    }
+</style>
+
+
+<script>
+  if (!localStorage.UserName) {
+    console.log("fetching for localstorage");
+    LoadLocalStorage();
+  }
+
+  async function LoadLocalStorage() {
+    var res = await fetch("/Store/LoadLocalStorage");
+    var json = await res.json();
+    console.log(json);
+    localStorage.UserName = json;
+  }
+</script>

@@ -1,0 +1,31 @@
+﻿@model IEnumerable<p1_2.Models.Order>
+
+<p>
+  <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        @Html.DisplayNameFor(model => model.TimeOfOrder)
+      </th>
+      <th>
+        @Html.DisplayNameFor(model => model.Total)
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in Model)
+    {
+      <tr>
+        <td>
+          @Html.DisplayFor(modelItem => item.TimeOfOrder)
+        </td>
+        <td>
+          @Html.DisplayFor(modelItem => item.Total)
+        </td>
+
+      </tr>
+    }
+  </tbody>
+</table>

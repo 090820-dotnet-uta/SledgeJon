@@ -1,0 +1,121 @@
+﻿@{
+  ViewData["Title"] = "Home Page";
+  ViewData["Landing"] = "true";
+}
+
+<h1 class="display-1 text-center text-white font-weight-bolder m-0" style="position:absolute; top:30%; left:0; right:0;">Bookopolis</h1>
+<div style="position:absolute; top:45%; left:0; right:0;" class="row justify-content-center">
+  <div class="col-2 d-flex justify-content-between">
+    <a asp-controller="Customer" asp-action="Login" class="btn btn-light btn-lg">Login</a>
+    <a asp-controller="Customer" asp-action="Signup" class="btn btn-light btn-lg">Signup</a>
+  </div>
+</div>
+
+<script>
+  const particles = [];
+  function setup() {
+    createCanvas(window.innerWidth, window.innerHeight);
+
+    const particlesLength = Math.min(
+      Math.floor(window.innerWidth / 10),
+      100
+    );
+    for (let i = 0; i < particlesLength; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function draw() {
+    background(20);
+
+    particles.forEach((particle, idx) => {
+      particle.update();
+      particle.draw();
+      particle.checkParticles(particles.slice(idx));
+    });
+  }
+
+  class Particle {
+    constructor() {
+      this.pos = createVector(random(width), random(height));
+      this.vel = createVector(random(-2, 2), random(-2, 2));
+      this.size = 5;
+    }
+
+    update() {
+      this.pos.add(this.vel);
+      this.edges();
+    }
+
+    draw() {
+      noStroke();
+      fill("rgba(255, 255, 255, 0.5)");
+      circle(this.pos.x, this.pos.y, this.size * 2);
+    }
+
+    edges() {
+      if (this.pos.x < 0 || this.pos.x > width) {
+        this.vel.x *= -1;
+      }
+
+      if (this.pos.y < 0 || this.pos.y > height) {
+        this.vel.y *= -1;
+      }
+
+      if (this.pos.x > width) {
+        this.pos.x = 0;
+      }
+
+      if (this.pos.y > height) {
+        this.pos.y = 0;
+      }
+    }
+
+    checkParticles(particles) {
+      particles.forEach((particle) => {
+        const d = dist(
+          this.pos.x,
+          this.pos.y,
+          particle.pos.x,
+          particle.pos.y
+        );
+        if (d < 120) {
+          const alpha = map(d, 0, 120, 0, 0.25);
+          stroke(`rgba(255, 255, 255, ${alpha})`);
+          line(this.pos.x, this.pos.y, particle.pos.x, particle.pos.y);
+        }
+      });
+    }
+  }
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
+
+@*<script>
+    //async function LoadKanyeRestQuote() {
+    //  var res = await fetch("https://api.kanye.rest");
+    //  var json = await res.json();
+    //  console.log(json);
+    //  document.querySelector(".yeezus").innerHTML = json.quote;
+    //}
+    //LoadKanyeRestQuote();
+
+    //async function TryPost() {
+    //  var p = {
+    //    CustomerId: 1,
+    //    FirstName: "asdasd",
+    //    LastName: "asdasd",
+    //    UserName: "asdasd",
+    //    Password: "sadasd"
+    //  };
+    //  var res = await fetch('/Home/HandlePost', {
+    //    method: 'post',
+    //    headers: { 'Content-Type': 'application/json' },
+    //    body: JSON.stringify(p)
+    //  });
+    //  console.log(res);
+    //}
+    //TryPost();
+
+  </script>*@

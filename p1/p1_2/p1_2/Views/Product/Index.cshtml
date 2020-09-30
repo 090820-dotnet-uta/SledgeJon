@@ -1,0 +1,60 @@
+﻿@model IEnumerable<p1_2.Models.ProductView>
+
+@{
+  ViewData["Title"] = "Index";
+}
+
+<div class="container">
+  <h1 class="text-center text-light display-4">
+    Product List
+  </h1>
+
+  <div class="row justify-content-center">
+    @foreach (var item in Model)
+    {
+      <div class="col-lg-4">
+        <a class="a-none" asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">
+          <div class="card bg-secondary p-3 my-1 text-center hover">
+            <h4 class="text-light">@Html.DisplayFor(modelItem => item.Title)</h4>
+            <h5 class="text-light">@Html.DisplayFor(modelItem => item.Author)</h5>
+            <h5 class="m-0 text-light">
+              <span class="badge badge-success">
+                $ @Html.DisplayFor(modelItem => item.Price)
+              </span>
+              <span class="badge badge-info">
+                Stock @Html.DisplayFor(modelItem => item.Amount)
+              </span>
+            </h5>
+          </div>
+        </a>
+      </div>
+    }
+  </div>
+</div>
+
+<style>
+  .a-none, .a-none:hover, .a-none:focus, .a-none:active {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .a-none {
+    color: inherit;
+  }
+
+  .hover:hover {
+    transition: all 0.1s ease-in;
+    transform: scale(1.04);
+  }
+
+  .hover:active {
+    transition: all 0.1s ease-out;
+    transform: scale(1.01);
+  }
+
+    .hover:active::after {
+      transition: all 0.1s ease-in;
+      transform: scale(1.1);
+    }
+</style>
+
