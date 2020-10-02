@@ -13,5 +13,6 @@ namespace p1_2.Models
     public string State { get; set; }
     public string Country { get; set; }
     public string ZIP { get; set; }
+    public List<Order> Orders { get; set; }
   }
 }

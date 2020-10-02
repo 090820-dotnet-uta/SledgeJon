@@ -12,12 +12,10 @@ namespace p1_2.Controllers
 {
   public class HomeController : Controller
   {
-    private readonly ILogger<HomeController> _logger;
     private readonly BookopolisDbContext _db;
 
-    public HomeController(ILogger<HomeController> logger, BookopolisDbContext db)
+    public HomeController(BookopolisDbContext db)
     {
-      _logger = logger;
       _db = db;
     }
 
@@ -26,12 +24,12 @@ namespace p1_2.Controllers
       //SeedStores(_db);
 
       ViewData["IsLoggedIn"] = "false";
-      return View();
+      return View("Index");
     }
 
     public IActionResult Privacy()
     {
-      return View();
+      return View("Privacy");
     }
 
     [HttpPost]
@@ -157,8 +155,6 @@ namespace p1_2.Controllers
 
       foreach (var store in stores) context.Stores.Add(store);
       context.SaveChanges();
-
-      _logger.LogInformation("successfully seeded database");
     }
 
   }

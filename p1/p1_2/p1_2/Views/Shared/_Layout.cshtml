@@ -11,14 +11,14 @@
 
 @{
   string hide = "";
-  if (ViewData["Landing"] == "true")
+  if ((string)ViewData["Landing"] == "true")
   {
     hide = "hidden";
   }
 }
 
 <body class="bg-dark" style="margin:0; overflow: @hide">
-  @if (ViewData["Landing"] == "true")
+  @if ((string)ViewData["Landing"] == "true")
   {
     <div style="display:none"></div>
     @RenderBody()
@@ -36,7 +36,7 @@
           <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
             <ul class="bg-dark navbar-nav flex-grow-1">
 
-              @if (ViewData["IsLoggedIn"] == "false")
+              @if ((string)ViewData["IsLoggedIn"] == "false")
               {
                 <li class="nav-item">
                   <a class="nav-link text-light" asp-area="" asp-controller="Customer" asp-action="Login">Login</a>
@@ -57,7 +57,7 @@
                   <a class="nav-link text-light" asp-area="" asp-controller="ShoppingCart" asp-action="Checkout">Checkout</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link text-light" asp-area="" asp-controller="ShoppingCart" asp-action="Orders">Orders</a>
+                  <a class="nav-link text-light" asp-area="" asp-controller="Order" asp-action="MyOrders">Orders</a>
                 </li>
                 <li class="nav-item">
                   <a onclick="localStorage.clear()" class="nav-link text-light" asp-area="" asp-controller="Customer" asp-action="Login">Logout</a>

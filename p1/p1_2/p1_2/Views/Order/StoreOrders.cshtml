@@ -1,0 +1,161 @@
+﻿@model p1_2.Models.OrderView
+
+@{
+  ViewData["Title"] = "StoreOrders";
+  Layout = "~/Views/Shared/_LayoutOrder.cshtml";
+}
+
+<div class="container text-white">
+  <div class="row justify-content-center">
+    <div class="col-4 d-flex justify-content-center">
+      <h1 class="font-weight-light text-center">Orders for Stores</h1>
+    </div>
+
+
+    <div class="col-2 text-center my-auto">
+      <button type="button" class="btn btn-light" data-toggle="modal" data-target="#staticBackdrop">
+        Choose a store
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Store Locations</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group">
+            @foreach (var item in Model.Stores)
+            {
+              <li onclick="HandleStoreClick(@item.StoreId)" class="list-group-item list-group-item bg-secondary my-1 py-0 pointer hover-darker">
+                <a class="a-none" asp-action="SelectStore" asp-controller="Order" asp-route-id="@item.StoreId">
+                  <div class="row py-3">
+                    <div class="col d-flex align-items-center">
+                      <h4 class="m-0 d-flex">
+                        <span class="badge badge-dark">@item.State</span>
+                      </h4>
+
+                    </div>
+                    <div class="col d-flex align-items-center">
+                      <h4 class="m-0 d-flex">
+                        <span class="badge badge-dark">@item.City</span>
+                      </h4>
+                    </div>
+                  </div>
+                </a>
+              </li>
+            }
+          </ul>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="list-group">
+
+    <li class="list-group-item list-group-item bg-secondary my-1">
+      <div class="row">
+        <div class="col d-flex align-items-center">
+          <h4 class="m-0 d-flex">
+            <span class="badge badge-dark">Order Id</span>
+          </h4>
+
+        </div>
+        <div class="col d-flex align-items-center">
+          <h4 class="m-0 d-flex">
+            <span class="badge badge-dark">Order Date</span>
+          </h4>
+
+        </div>
+      </div>
+
+    </li>
+
+    @if (Model.IsEmpty)
+    {
+      <li class="list-group-item bg-dark my-1 text-center">
+        <h1 class="text-light">@Model.EmptyMessage</h1>
+      </li>
+    }
+    else
+    {
+      @foreach (var item in Model.Orders)
+      {
+        <li class="list-group-item list-group-item-action list-group-item bg-secondary my-1 pointer">
+          <div class="row">
+            <div class="col d-flex align-items-center">
+              <h4 class="m-0 d-flex">
+                <span class="badge badge-dark">@item.OrderId</span>
+              </h4>
+
+            </div>
+            <div class="col d-flex align-items-center">
+              <h4 class="m-0 d-flex">
+                <span class="badge badge-dark">@item.TimeOfOrder</span>
+              </h4>
+            </div>
+          </div>
+        </li>
+      }
+
+    }
+
+  </ul>
+</div>
+
+<style>
+  .a-none, .a-none:hover, .a-none:focus, .a-none:active {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .a-none {
+    color: inherit;
+  }
+
+  .pointer {
+    cursor: pointer;
+  }
+
+  .hover-darker:hover {
+    border: 1px solid white;
+  }
+
+  .hover-darker:active {
+    transition: all 0.1s ease-out;
+    transform: scale(.98);
+  }
+
+    .hover-darker:active::after {
+      transition: all 0.1s ease-in;
+      transform: scale(1.06);
+    }
+</style>
+
+<script>
+  function HandleStoreClick(e) {
+    console.log(e)
+    //CallSelectStore(e)
+  }
+  async function CallSelectStore(e) {
+    var s = {
+      StoreId: e
+    };
+    var res = await fetch('/Order/SelectStore', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(s)
+    });
+    console.log(res);
+  }
+</script>

@@ -1,0 +1,52 @@
+﻿@model p1_2.Models.OrderView
+
+@{
+  ViewData["Title"] = "MyOrders";
+  Layout = "~/Views/Shared/_LayoutOrder.cshtml";
+}
+
+<div class="container text-white">
+  <h1 class="font-weight-light text-center">Orders for <span class="username"></span></h1>
+  <ul class="list-group">
+
+    <li class="list-group-item list-group-item bg-secondary my-1">
+      <div class="row">
+        <div class="col d-flex align-items-center">
+          <h4 class="m-0 d-flex">
+            <span class="badge badge-dark">Order Id</span>
+          </h4>
+
+        </div>
+        <div class="col d-flex align-items-center">
+          <h4 class="m-0 d-flex">
+            <span class="badge badge-dark">Order Date</span>
+          </h4>
+
+        </div>
+      </div>
+
+    </li>
+    @foreach (var item in Model.Orders)
+    {
+      <li class="list-group-item list-group-item-action list-group-item bg-secondary my-1 pointer">
+        <div class="row">
+          <div class="col d-flex align-items-center">
+            <h4 class="m-0 d-flex">
+              <span class="badge badge-dark">@item.OrderId</span>
+            </h4>
+
+          </div>
+          <div class="col d-flex align-items-center">
+            <h4 class="m-0 d-flex">
+              <span class="badge badge-dark">@item.TimeOfOrder</span>
+            </h4>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+</div>
+
+<script>
+  document.querySelector(".username").innerHTML = localStorage.UserName;
+</script>

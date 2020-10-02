@@ -109,6 +109,9 @@ namespace p1_2.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("CustomerAddressId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("TimeOfOrder")
                         .HasColumnType("datetime2");
 
@@ -116,6 +119,8 @@ namespace p1_2.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("OrderId");
+
+                    b.HasIndex("CustomerAddressId");
 
                     b.ToTable("Orders");
                 });
@@ -208,6 +213,13 @@ namespace p1_2.Migrations
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("p1_2.Models.Order", b =>
+                {
+                    b.HasOne("p1_2.Models.CustomerAddress", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("CustomerAddressId");
                 });
 
             modelBuilder.Entity("p1_2.Models.OrderProduct", b =>

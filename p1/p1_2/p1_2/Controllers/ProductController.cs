@@ -123,7 +123,16 @@ namespace p1_2.Controllers
       int temp = (int)_cache.Get("StoreId");
       Store store = (Store)_cache.Get("Store");
       p.Amount--;
-      ShoppingCart sh = new ShoppingCart() { StockAmount = p.Amount, Author = p.Author, Title = p.Title, Price = p.Price, StoreId = temp, ProductId = p.ProductId, State = store.State };
+      ShoppingCart sh = new ShoppingCart()
+      {
+        StockAmount = p.Amount,
+        Author = p.Author,
+        Title = p.Title,
+        Price = p.Price,
+        StoreId = temp,
+        ProductId = p.ProductId,
+        State = store.State
+      };
       var inv = _db.Inventories.FirstOrDefault(i => i.ProductId == sh.ProductId && i.StoreId == (int)_cache.Get("StoreId"));
 
       sh.Inventory = inv;

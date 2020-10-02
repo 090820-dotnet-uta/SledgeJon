@@ -1,0 +1,70 @@
+﻿
+@{
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<ul class="nav justify-content-center">
+  @if ((string)ViewData["MyOrders"] == "active")
+  {
+    <li class="nav-item hover border">
+      <a class="nav-link a-none text-white font-weight-bold active" aria-selected="true" asp-action="MyOrders" asp-controller="Order">My Orders</a>
+    </li>
+
+  }
+  else
+  {
+    <li class="nav-item hover border">
+      <a class="nav-link a-none text-white font-weight-bold" aria-selected="false" asp-action="MyOrders" asp-controller="Order">My Orders</a>
+    </li>
+  }
+  @if ((string)ViewData["StoreOrders"] == "active")
+  {
+    <li class="nav-item hover border">
+      <a class="nav-link a-none text-white font-weight-bold active" aria-selected="false" asp-action="StoreOrders" asp-controller="Order">Store Orders</a>
+    </li>
+  }
+  else
+  {
+    <li class="nav-item hover border">
+      <a class="nav-link a-none text-white font-weight-bold" aria-selected="false" asp-action="StoreOrders" asp-controller="Order">Store Orders</a>
+    </li>
+  }
+  @if ((string)ViewData["CustomerOrders"] == "active")
+  {
+    <li class="nav-item hover border">
+      <a class="nav-link a-none text-white font-weight-bold active" aria-selected="false" asp-action="CustomerOrders" asp-controller="Order">Customer Orders</a>
+    </li>
+  }
+  else
+  {
+    <li class="nav-item hover border">
+      <a class="nav-link a-none text-white font-weight-bold" aria-selected="false" asp-action="CustomerOrders" asp-controller="Order">Customer Orders</a>
+    </li>
+  }
+</ul>
+
+@RenderBody()
+
+<style>
+  .a-none, .a-none:hover, .a-none:focus, .a-none:active {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .hover:hover {
+    background-color: white !important;
+  }
+
+    .hover:hover a {
+      color: black !important;
+    }
+
+  .a-none {
+    color: inherit;
+  }
+
+  .active {
+    background-color: white !important;
+    color: black !important;
+  }
+</style>

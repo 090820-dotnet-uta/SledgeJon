@@ -97,6 +97,10 @@ namespace p1_2.Controllers
       order.TimeOfOrder = DateTime.Now;
       order.OrderProducts = orderProducts;
       order.Total = shoppingCart.Sum(sh => sh.Price);
+      List<Order> orders = new List<Order>();
+      orders.Add(order);
+
+      customerAddress.Orders = orders;
 
       customerAddresses.Add(customerAddress);
 
@@ -109,14 +113,8 @@ namespace p1_2.Controllers
 
       _cache.Set("shoppingCart", new List<ShoppingCart>());
       shoppingCart = new List<ShoppingCart>();
-      return RedirectToAction("Orders");
+      return RedirectToAction("Index", "Order");
 
-    }
-
-    public IActionResult Orders()
-    {
-      var orders = _db.Orders;
-      return View(orders);
     }
 
     public IActionResult Index()
