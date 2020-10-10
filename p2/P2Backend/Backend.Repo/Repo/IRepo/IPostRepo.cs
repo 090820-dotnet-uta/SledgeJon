@@ -1,0 +1,12 @@
+﻿using Backend.Models;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Backend.Repo.Repo.IRepo
+{
+  public interface IPostRepo : IRepo<Post>
+  {
+    void Update(Post post);
+  }
+}
